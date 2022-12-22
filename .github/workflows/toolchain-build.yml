@@ -9,8 +9,13 @@ on:
 jobs:
   build-arm64-tc:
     runs-on: ubuntu-latest
-    container:
-      image: arm64v8/fedora:35
+    name: arm64 build
+
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: fedora_latest
 
     steps:
     - uses: actions/checkout@v3
