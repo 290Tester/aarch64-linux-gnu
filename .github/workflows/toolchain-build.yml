@@ -4,19 +4,20 @@ on:
   push:
   schedule:
     - cron: '0 0 * * 0,4'
+  workflow_dispatch:
 
 jobs:
   build-arm64-tc:
     runs-on: ubuntu-latest
     container:
-      image: fedora:35
+      image: arm64v8/fedora:35
 
     steps:
     - uses: actions/checkout@v3
     - name: Set build date
       id: get-date
       run: |
-        ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+        ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
         echo ::set-output name=date::$(/bin/date -u "+%Y%m%d")
     - name: Setup
       run: |
@@ -56,7 +57,7 @@ jobs:
   build-arm-tc:
     runs-on: ubuntu-latest
     container:
-      image: fedora:35
+      image: arm64v8/fedora:35
 
     steps:
     - uses: actions/checkout@v3
