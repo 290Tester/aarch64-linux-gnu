@@ -1,0 +1,28 @@
+env:
+    CIRRUS_CLONE_DEPTH: 1
+    BUILD_HOSTNAME: "CirrusCI"
+    CIRRUS_WORKING_DIR: "/tmp/ci"
+
+
+task:
+  name: Compile aarch64-linux-gnu
+
+  only_if: $CIRRUS_REPO_OWNER == 'dopaemon' && $CIRRUS_BRANCH == 'master'
+  skip: $CIRRUS_BRANCH != 'master'
+  arm_container:
+    image: arm64v8/fedora:35
+    cpu: 4
+    memory: 8G
+  install_packages_script:
+    - sudo rm -rf /tmp/ci/*
+    - sudo dnf groupinstall "Development tools" -y
+    - sudo dnf install mpfr-devel gmp-devel libmpc-devel zlib-devel glibc-devel.i686 glibc-devel binutils-devel g++ texinfo bison flex cmake which ninja-build clang lld bzip2 -y
+  setup_script:
+    - git clone -b master --single-branch https://github.com/dopaemon/aarch64-linux-gnu.git ~/source
+  aarch64_script:
+    - cd ~/source
+    - ./build-gcc.sh -a arm64
+    - ./build-lld.sh -a arm64
+    - ls
+    - echo "#################"
+    - ls ../
