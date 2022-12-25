@@ -2,7 +2,11 @@ env:
     CIRRUS_CLONE_DEPTH: 1
     BUILD_HOSTNAME: "CirrusCI"
     CIRRUS_WORKING_DIR: "/tmp/ci"
-
+    DEBIAN_FRONTEND: "noninteractive"
+    LC_ALL: "en_US.UTF-8"
+    LANG: "en_US.UTF-8"
+    LANGUAGE: "en_US.UTF-8"
+    GITHUB_TOKEN: ""
 
 task:
   name: Compile aarch64-linux-gnu
@@ -10,21 +14,24 @@ task:
   only_if: $CIRRUS_REPO_OWNER == 'dopaemon' && $CIRRUS_BRANCH == 'master'
   skip: $CIRRUS_BRANCH != 'master'
   arm_container:
-    image: arm64v8/fedora:35
+    image: arm64v8/debian:bullseye-slim
     cpu: 4
     memory: 8G
   install_packages_script:
-    - sudo rm -rf /tmp/ci/*
-    - sudo dnf groupinstall "Development tools" -y
-    - sudo dnf install mpfr-devel gmp-devel libmpc-devel zlib-devel glibc-devel binutils-devel g++ texinfo bison flex cmake which ninja-build clang lld bzip2 -y
+    - rm -rf /tmp/ci/*
+    - apt update && apt install libdebuginfod-dev libclang-dev babeltrace help2man moreutils autoconf automake axel bc bison build-essential curl expat flex g++ gawk gcc git-core gnupg gperf libtinfo5 libc6-dev libcap-dev libexpat1-dev libgmp-dev liblz4-1 liblz4-dev liblzma-dev libmpc-dev libmpfr-dev libncurses5-dev libsdl1.2-dev libssl-dev libtool libxml2 libxml2-utils lzma liblzma5 lzop ncftp ncurses-dev patch patchelf pkg-config python python-all-dev re2c schedtool squashfs-tools texinfo unzip w3m xsltproc zip zlib1g-dev lzip libxml-simple-perl libisl-dev -y
+    - echo "dopaemon" > /etc/hostname
+    - git config --global user.name "dopaemon"
+    - git config --global user.email "polarisdp@gmail.com"
+    - git config --global credential.helper store
+  locate_script:
+    - apt-get install -y locales locales-all
   setup_script:
     - git clone -b master --single-branch https://github.com/dopaemon/aarch64-linux-gnu.git ~/source
-    - ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
-    - echo ::set-output name=date::$(/bin/date -u "+%Y%m%d")
   aarch64_script:
     - cd ~/source
-    - ./build-gcc.sh -a arm64
+    - ./build-gcc.sh -a arm64gnu
     - ./build-lld.sh -a arm64
     - ls
     - echo "#################"
-    - ls ../
+    - ls aarch64-linux-gnu
