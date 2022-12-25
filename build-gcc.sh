@@ -97,10 +97,10 @@ build_gcc() {
     --with-pkgversion="Eva GCC" \
     --with-sysroot
 
-  make all-gcc -j$(($(nproc --all) + 2))
-  make all-target-libgcc -j$(($(nproc --all) + 2))
-  make install-gcc -j$(($(nproc --all) + 2))
-  make install-target-libgcc -j$(($(nproc --all) + 2))
+  make all-gcc -j4
+  make all-target-libgcc -j4
+  make install-gcc -j4
+  make install-target-libgcc -j4
   echo "Built GCC!"
 }
 
