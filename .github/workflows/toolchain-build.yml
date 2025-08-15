@@ -20,8 +20,8 @@ jobs:
 
     - name: Install deps
       run: |
-        sudo dnf groupinstall "Development tools" -y
-        sudo dnf install -y mpfr-devel gmp-devel libmpc-devel zlib-devel \
+        sudo apt groupinstall "Development tools" -y
+        sudo apt install -y mpfr-devel gmp-devel libmpc-devel zlib-devel \
                             glibc-devel.i686 glibc-devel binutils-devel gcc-c++ \
                             texinfo bison flex cmake ninja-build clang lld bzip2
 
@@ -69,8 +69,8 @@ jobs:
 
     - name: Install deps
       run: |
-        dnf groupinstall "Development tools" -y
-        dnf install -y mpfr-devel gmp-devel libmpc-devel zlib-devel \
+        apt groupinstall "Development tools" -y
+        apt install -y mpfr-devel gmp-devel libmpc-devel zlib-devel \
                        glibc-devel.i686 glibc-devel binutils-devel gcc-c++ \
                        texinfo bison flex cmake ninja-build clang lld bzip2
 
