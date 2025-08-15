@@ -68,12 +68,13 @@ jobs:
       run: echo "date=$(TZ=Asia/Kolkata date -u +%Y%m%d)" >> $GITHUB_OUTPUT
 
     - name: Install deps
-      run: |
-        apt groupinstall "Development tools" -y
-        apt install -y mpfr-devel gmp-devel libmpc-devel zlib-devel \
-                       glibc-devel.i686 glibc-devel binutils-devel gcc-c++ \
-                       texinfo bison flex cmake ninja-build clang lld bzip2
-
+  run: |
+    sudo apt-get update
+    sudo apt-get install -y \
+      build-essential flex bison texinfo gawk libtool automake \
+      libncurses5-dev libmpc-dev libmpfr-dev libgmp-dev \
+      libexpat1-dev bc zlib1g-dev libssl-dev clang lld ninja-build \
+      gcc g++ gperf curl wget
     - name: Build & Push
       env:
         GITHUB_EMAIL: ${{ secrets.EMAIL }}
