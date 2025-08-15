@@ -6,7 +6,10 @@ set -e
 echo "*****************************************"
 echo "* Building Bare-Metal Bleeding Edge GCC *"
 echo "*****************************************"
-
+mkdir -p "$PREFIX"
+ARCH=${arch}
+Version=$(date +%y.%m%d)
+export PREFIX="/data/local/tmp/gnu/gcc${ARCH}${Version}"
 # TODO: Add more dynamic option handling
 while getopts a: flag; do
   case "${flag}" in
@@ -95,7 +98,10 @@ build_gcc() {
     --with-linker-hash-style=gnu \
     --with-newlib \
     --with-pkgversion="Eva GCC" \
-    --with-sysroot
+    --with-sysroot \
+    --with-dynamic-linker=/data/local/tmp/Android-tools/usr/ld/lib/ld-linux-aarch64.so.1 \
+   --with-ld=/data/local/tmp/Android-tools/usr/ld/bin/ld.so
+
 
   make all-gcc -j4
   make all-target-libgcc -j4
