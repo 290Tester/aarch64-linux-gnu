@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-arm64-tc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     name: arm64 build
 
     steps:
@@ -18,12 +18,14 @@ jobs:
       id: get-date
       run: echo "date=$(TZ=Asia/Ho_Chi_Minh date -u +%Y%m%d)" >> $GITHUB_OUTPUT
 
-    - name: Install deps
+    - name: Install dependencies
       run: |
-        sudo apt groupinstall "Development tools" -y
-        sudo apt install -y mpfr-devel gmp-devel libmpc-devel zlib-devel \
-                            glibc-devel.i686 glibc-devel binutils-devel gcc-c++ \
-                            texinfo bison flex cmake ninja-build clang lld bzip2
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential flex bison texinfo gawk libtool automake \
+          libncurses5-dev libmpc-dev libmpfr-dev libgmp-dev \
+          libexpat1-dev bc zlib1g-dev libssl-dev clang lld ninja-build \
+          gcc g++ gperf curl wget git
 
     - name: Build & Push
       env:
@@ -31,6 +33,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
         GITHUB_USER: ${{ secrets.USERNAME }}
       run: |
+        set -e
         git config --global user.name  "$GITHUB_USER"
         git config --global user.email "$GITHUB_EMAIL"
 
@@ -38,8 +41,8 @@ jobs:
         rm -rf ../gcc-arm64/*
         chmod +x build-*.sh
 
-        ./build-gcc.sh  -a arm64
-        ./build-lld.sh  -a arm64
+        ./build-gcc.sh -a arm64
+        ./build-lld.sh -a arm64
 
         script_dir=$PWD
         cd ../gcc-arm64
@@ -58,7 +61,7 @@ jobs:
   build-arm-tc:
     runs-on: ubuntu-latest
     container:
-      image: arm64v8/fedora:35
+      image: arm64v8/fedora:35   # 这里用 Fedora，所以下面可用 dnf
 
     steps:
     - uses: actions/checkout@v3
@@ -67,20 +70,21 @@ jobs:
       id: get-date
       run: echo "date=$(TZ=Asia/Kolkata date -u +%Y%m%d)" >> $GITHUB_OUTPUT
 
-    - name: Install deps
-  run: |
-    sudo apt-get update
-    sudo apt-get install -y \
-      build-essential flex bison texinfo gawk libtool automake \
-      libncurses5-dev libmpc-dev libmpfr-dev libgmp-dev \
-      libexpat1-dev bc zlib1g-dev libssl-dev clang lld ninja-build \
-      gcc g++ gperf curl wget
+    - name: Install dependencies
+      run: |
+        dnf groupinstall -y "Development Tools"
+        dnf install -y \
+          mpfr-devel gmp-devel libmpc-devel zlib-devel \
+          glibc-devel.i686 glibc-devel binutils-devel gcc-c++ \
+          texinfo bison flex cmake ninja-build clang lld bzip2 git
+
     - name: Build & Push
       env:
         GITHUB_EMAIL: ${{ secrets.EMAIL }}
         GITHUB_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
         GITHUB_USER: ${{ secrets.USERNAME }}
       run: |
+        set -e
         git config --global user.name  "$GITHUB_USER"
         git config --global user.email "$GITHUB_EMAIL"
 
